@@ -42,7 +42,7 @@ services:
     hostname: kibana
 
   fooltrader:
-    image: gzfarmer/fooltrader:latest
+    image: foolcage/fooltrader:latest
     container_name: fooltrader 
     privileged: true
     environment:
