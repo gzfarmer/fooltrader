@@ -1,0 +1,74 @@
+version: '3'
+services:
+  elasticsearch:
+    image: foolcage/elasticsearch:6.2.4
+    container_name: elasticsearch
+    privileged: true
+    environment:
+      - cluster.name=es-fooltrader
+      - bootstrap.memory_lock=true
+      - "discovery.type=single-node" 
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - es-config:/usr/share/elasticsearch/config
+    ports:
+      - 9892:9200
+      - 9893:9300
+    networks:
+      - fooltrader
+    hostname: elasticsearch
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: foolcage/kibana:6.2.4
+    container_name: kibana
+    privileged: true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - kibana-data:/usr/share/kibana/data
+      - kibana-config:/usr/share/kibana/config
+    ports:
+      - 9856:5601
+    networks:
+      - fooltrader
+    hostname: kibana
+
+  fooltrader:
+    image: gzfarmer/fooltrader:latest
+    container_name: fooltrader 
+    privileged: true
+    environment:
+      - GRANT_SUDO=yes
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /home/xuanqi/workspace/github/fooltrader/data:/home/jovyan/work/fooltrader/data
+    ports:
+      - 8888:8888
+    networks:
+      - fooltrader
+    hostname: fooltrader 
+
+volumes:
+  es-data:
+    driver: local
+  kibana-data:
+    driver: local
+  es-config:
+    driver: local
+  kibana-config:
+    driver: local
+
+networks:
+  fooltrader:
+      driver: bridge
